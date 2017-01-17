@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"database/sql"
 	"strings"
+	"encoding/json"
 )
 
 /*
@@ -36,10 +37,12 @@ type Item struct {
 }
 
 // Given a search string, find items with a name like this
-func fetchItemsBySubstring(searchTerm string) []string {
-	var items []string
+func fetchItemsBySubstring(searchTerm string) Result {
+	//var items []string
+	var r Result
 
 	// TODO Put some logic to attempt to fetch from Redis here first...
+
 
 	// If it doesn't exist in cache, then fetch from DB (the client should enforce its own cache too to prevent spamming server)
 	query := "SELECT i.name " +
@@ -57,7 +60,7 @@ func fetchItemsBySubstring(searchTerm string) []string {
 			}
 
 			if name.Valid && name.String != "" {
-				items = append(items, name.String)
+				r.Items = append(r.Items, name.String)
 			}
 		}
 		if err := rows.Err(); err != nil {
@@ -66,7 +69,7 @@ func fetchItemsBySubstring(searchTerm string) []string {
 		DB.CloseRows(rows)
 	}
 
-	return items
+	return r
 }
 
 // Given a snake_case string find the item in SQL and populate this struct
@@ -82,7 +85,7 @@ func (i *Item) fetchItemByName(itemName string) {
 		"ON ie.effect_id = e.id " +
 		"WHERE i.displayName = ?"
 
-	fmt.Println(query)
+	LogInDebugMode(query)
 
 	rows, _ := DB.Query(query, itemName)
 	if rows != nil {
@@ -94,7 +97,7 @@ func (i *Item) fetchItemByName(itemName string) {
 			if err != nil {
 				fmt.Println("Scan error: ", err)
 			}
-			fmt.Println("Row is: ", name, imageSrc, code, effect, fmt.Sprint(value), effectName, uri, restriction, fmt.Sprint(averagePrice))
+			LogInDebugMode("Row is: ", name, imageSrc, code, effect, fmt.Sprint(value), effectName, uri, restriction, fmt.Sprint(averagePrice))
 
 			// Set the appropriate fields on the struct
 			if name.Valid && name.String != "" {
@@ -153,4 +156,26 @@ func (i *Item) setStatistic(code sql.NullString, effect sql.NullString, value sq
 
 		i.Statistics = append(i.Statistics, statistic)
 	}
+}
+
+func (i *Item) serialize() []byte {
+	bytes, err := json.Marshal(i)
+	if err != nil {
+		fmt.Println("ERROR WHEN MARSHALING: ", err)
+	}
+
+	LogInDebugMode("Marshalled to: ", bytes)
+	return bytes;
+}
+
+func (i *Item) deserialize(bytes []byte) Item {
+	var item Item
+
+	err := json.Unmarshal(bytes, &item)
+	if err != nil {
+		fmt.Println("ERROR WHEN UNMARSHALING: ", err)
+	}
+
+	LogInDebugMode("Unmarshalled to: ", item)
+	return item
 }

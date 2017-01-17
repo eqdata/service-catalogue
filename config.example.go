@@ -22,5 +22,7 @@ const PORT = "8080"
 const MC_HOST = "";
 const MC_PORT = "";
 
-const CACHE_TIME_IN_SECS = 60
+const ITEM_CACHE_TIME_IN_SECS = 60 * 60 * 24 * 30 // 30 days
+const AUCTION_CACHE_TIME_IN_SECS = 60 * 15  // 15 minutes
+const SEARCH_CACHE_TIME_IN_SECS = 60 * 30 // 30 minutes
  */
