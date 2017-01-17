@@ -20,6 +20,12 @@ var routes = Routes {
 		AC.store,
 	},
 	Route {
+		"Fetch Auctions for Item",
+		"GET",
+		"/items/auctions/{item_name}",
+		AC.fetch,
+	},
+	Route {
 		"Fetch Item",
 		"GET",
 		"/items/{item_name}",

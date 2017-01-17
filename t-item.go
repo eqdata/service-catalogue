@@ -165,7 +165,7 @@ func (i *Item) serialize() []byte {
 	}
 
 	LogInDebugMode("Marshalled to: ", bytes)
-	return bytes;
+	return bytes
 }
 
 func (i *Item) deserialize(bytes []byte) Item {

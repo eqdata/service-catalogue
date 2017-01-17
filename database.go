@@ -11,7 +11,7 @@ type Database struct {
 }
 
 func (d *Database) ConnectionString() string {
-	return SQL_USER + ":" + SQL_PASS + "@tcp(" + SQL_HOST + ":" + SQL_PORT + ")/" + SQL_DB
+	return SQL_USER + ":" + SQL_PASS + "@tcp(" + SQL_HOST + ":" + SQL_PORT + ")/" + SQL_DB + "?parseTime=true"
 }
 
 func (d *Database) Open() bool {
