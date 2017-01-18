@@ -8,6 +8,10 @@ const DEBUG = true
 
 const WIKI_BASE_URL string = "http://wiki.project1999.com"
 
+// We talk to the service wiki if we can't find item data so we try to create it
+const WIKI_SERVICE_HOST = "localhost"
+const WIKI_SERVICE_PORT = "8081"
+
 // SQL DB Config
 const SQL_HOST = "";
 const SQL_PORT = "";
