@@ -7,7 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"github.com/rs/cors"
+	"github.com/gorilla/handlers"
 )
 
 // Global connection to be used by the server
@@ -33,8 +33,8 @@ func main() {
 	fmt.Println("Listening on port: " + PORT)
 	router := CreateRouter()
 
-	handler := cors.Default().Handler(router)
-	log.Fatal(http.ListenAndServe(":" + PORT, handler))
+	ao := handlers.AllowedOrigins([]string{"*"})
+	log.Fatal(http.ListenAndServe(":" + PORT, handlers.CORS(ao)(router)))
 }
 
 func cleanup() {

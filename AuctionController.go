@@ -74,10 +74,6 @@ func (c *AuctionController) fetch(w http.ResponseWriter, r  *http.Request) {
 	// If we still have nothing send back a 404
 	fmt.Println("Sending response to client")
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	w.Header().Set("Access-Control-Allow-Headers",
-		"Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(auctions)
