@@ -33,8 +33,12 @@ func main() {
 	fmt.Println("Listening on port: " + PORT)
 	router := CreateRouter()
 
-	ao := handlers.AllowedOrigins([]string{"*"})
-	log.Fatal(http.ListenAndServe(":" + PORT, handlers.CORS(ao)(router)))
+	origins     := handlers.AllowedOrigins([]string{"*"})
+	credentials := handlers.AllowCredentials()
+	methods     := handlers.AllowedMethods([]string{"PUT, OPTIONS, POST, PATCH, DELETE, GET"})
+	headers     := handlers.AllowedHeaders([]string{"access-control-allow-origin", "access-control-allow-headers", "x-requested-with"})
+
+	log.Fatal(http.ListenAndServe(":" + PORT, handlers.CORS(origins, credentials, methods, headers)(router)))
 }
 
 func cleanup() {
