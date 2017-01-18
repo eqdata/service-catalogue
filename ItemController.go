@@ -58,7 +58,6 @@ func (i *ItemController) fetchItem(w http.ResponseWriter, r  *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		w.Header().Set("Access-Control-Allow-Headers", "accept, content-type, x-xsrf-token, x-csrf-token")
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte("No item exists with the name: " + encodedItemName + " if you believe this to be an error please contact us."))
@@ -67,7 +66,6 @@ func (i *ItemController) fetchItem(w http.ResponseWriter, r  *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		w.Header().Set("Access-Control-Allow-Headers", "accept, content-type, x-xsrf-token, x-csrf-token")
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(item)
@@ -81,7 +79,6 @@ func (i *ItemController) fetchItemNamesBySearchString(w http.ResponseWriter, r *
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "accept, content-type, x-xsrf-token, x-csrf-token")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 	var results Result
 
