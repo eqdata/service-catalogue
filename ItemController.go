@@ -55,10 +55,12 @@ func (i *ItemController) fetchItem(w http.ResponseWriter, r  *http.Request) {
 	fmt.Println("Sending response to client")
 	if item.Name == "" {
 		w.Header().Set("Content-Type", "text/plain")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte("No item exists with the name: " + encodedItemName + " if you believe this to be an error please contact us."))
 	} else {
 		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(item)
 	}
@@ -68,6 +70,7 @@ func (i *ItemController) fetchItem(w http.ResponseWriter, r  *http.Request) {
 func (i *ItemController) fetchItemNamesBySearchString(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Fetching item names matching: ", TitleCase(mux.Vars(r)["search_term"], true))
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	var results Result
 
