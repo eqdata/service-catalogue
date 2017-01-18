@@ -43,10 +43,4 @@ var routes = Routes {
 		"/players/{player_name}",
 		PC.fetch,
 	},
-	//Route {
-	//	"Options",
-	//	"OPTIONS",
-	//	"/players/{player_name}",
-	//	CC.reply,
-	//},
 }

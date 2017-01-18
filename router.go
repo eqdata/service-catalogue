@@ -18,11 +18,20 @@ func CreateRouter() *mux.Router {
 			handler = Logger(handler, route.name)
 		}
 
+		// Bind the main method
 		router.
-			Methods(route.method, "OPTIONS").
+			Methods(route.method).
 			Path(route.pattern).
 			Name(route.name).
 			Handler(handler)
+
+		// Bind OPTIONS handler for CORS
+		var h http.HandlerFunc = CC.reply
+		router.
+			Methods("OPTIONS").
+			Path(route.pattern).
+			Name(route.name).
+			Handler(h)
 	}
 
 	return router

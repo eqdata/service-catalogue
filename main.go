@@ -7,7 +7,6 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"github.com/gorilla/handlers"
 )
 
 // Global connection to be used by the server
@@ -33,12 +32,7 @@ func main() {
 	fmt.Println("Listening on port: " + PORT)
 	router := CreateRouter()
 
-	origins     := handlers.AllowedOrigins([]string{"*"})
-	credentials := handlers.AllowCredentials()
-	methods     := handlers.AllowedMethods([]string{"PUT, OPTIONS, POST, PATCH, DELETE, GET"})
-	headers     := handlers.AllowedHeaders([]string{"access-control-allow-origin", "access-control-allow-headers", "x-requested-with"})
-
-	log.Fatal(http.ListenAndServe(":" + PORT, handlers.CORS(origins, credentials, methods, headers)(router)))
+	log.Fatal(http.ListenAndServe(":" + PORT, router))
 }
 
 func cleanup() {
