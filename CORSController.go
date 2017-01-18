@@ -2,13 +2,16 @@ package main
 
 import (
 	"net/http"
-	"fmt"
-	"github.com/gorilla/mux"
 )
 
 type CORSController struct { Controller }
 
 // Stores auction data to the Amazon RDS storage once it has been parsed
 func (c *CORSController) reply(w http.ResponseWriter, r  *http.Request) {
-	fmt.Println("Fetching player: ", mux.Vars(r)["player_name"])
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	w.Header().Set("Access-Control-Allow-Headers",
+		"Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+
+	return
 }
