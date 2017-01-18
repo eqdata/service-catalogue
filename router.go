@@ -19,7 +19,7 @@ func CreateRouter() *mux.Router {
 		}
 
 		router.
-			Methods(route.method).
+			Methods(route.method, "OPTIONS").
 			Path(route.pattern).
 			Name(route.name).
 			Handler(handler)

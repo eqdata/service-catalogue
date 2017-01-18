@@ -8,3 +8,4 @@ type Controller interface {}
 var AC = new(AuctionController)
 var IC = new(ItemController)
 var PC = new(PlayerController)
+//var CC = new(CORSController)
