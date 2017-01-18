@@ -56,11 +56,19 @@ func (i *ItemController) fetchItem(w http.ResponseWriter, r  *http.Request) {
 	if item.Name == "" {
 		w.Header().Set("Content-Type", "text/plain")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		w.Header().Set("Access-Control-Allow-Headers", "accept, content-type, x-xsrf-token, x-csrf-token")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte("No item exists with the name: " + encodedItemName + " if you believe this to be an error please contact us."))
 	} else {
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		w.Header().Set("Access-Control-Allow-Headers", "accept, content-type, x-xsrf-token, x-csrf-token")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(item)
 	}
@@ -71,6 +79,9 @@ func (i *ItemController) fetchItemNamesBySearchString(w http.ResponseWriter, r *
 	fmt.Println("Fetching item names matching: ", TitleCase(mux.Vars(r)["search_term"], true))
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	w.Header().Set("Access-Control-Allow-Headers", "accept, content-type, x-xsrf-token, x-csrf-token")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 	var results Result
 
