@@ -83,11 +83,12 @@ func (i *Item) fetchItemByName(itemName string) {
 		"ON ie.item_id = i.id " +
 		"LEFT JOIN effects AS e " +
 		"ON ie.effect_id = e.id " +
-		"WHERE i.displayName = ?"
+		"WHERE i.displayName = ? " +
+		"OR i.name = ?"
 
 	LogInDebugMode(query)
 
-	rows, _ := DB.Query(query, itemName)
+	rows, _ := DB.Query(query, itemName, itemName)
 	if rows != nil {
 		for rows.Next() {
 			var name, imageSrc, code, effect, effectName, uri, restriction sql.NullString
@@ -98,6 +99,8 @@ func (i *Item) fetchItemByName(itemName string) {
 				fmt.Println("Scan error: ", err)
 			}
 			LogInDebugMode("Row is: ", name, imageSrc, code, effect, fmt.Sprint(value), effectName, uri, restriction, fmt.Sprint(averagePrice))
+
+			// If theres an invalid code, trigger a wiki service update?
 
 			// Set the appropriate fields on the struct
 			if name.Valid && name.String != "" {
