@@ -45,7 +45,7 @@ func fetchItemsBySubstring(searchTerm string) Result {
 
 
 	// If it doesn't exist in cache, then fetch from DB (the client should enforce its own cache too to prevent spamming server)
-	query := "SELECT i.name " +
+	query := "SELECT i.displayName " +
 		"FROM items AS i " +
 		"WHERE i.name LIKE ? " +
 		"LIMIT 15 "
@@ -74,7 +74,7 @@ func fetchItemsBySubstring(searchTerm string) Result {
 
 // Given a snake_case string find the item in SQL and populate this struct
 func (i *Item) fetchItemByName(itemName string) {
-	query := "SELECT i.name, i.imageSrc, s.code, s.effect, s.value, e.name as effectName, e.uri, ie.restriction, " +
+	query := "SELECT i.displayName, i.imageSrc, s.code, s.effect, s.value, e.name as effectName, e.uri, ie.restriction, " +
 		"(SELECT AVG(price) FROM auctions WHERE item_id = i.id) AS averagePrice " +
 		"FROM items AS i " +
 		"LEFT JOIN statistics AS s " +
