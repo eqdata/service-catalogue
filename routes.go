@@ -16,7 +16,7 @@ var routes = Routes {
 	Route {
 		"Fetch Auctions for Item",
 		"GET",
-		"/auctions/{item_name}",
+		"/items/auctions/{item_name}",
 		AC.fetch,
 	},
 	Route {
