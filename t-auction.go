@@ -17,6 +17,7 @@ type Auction struct {
 	Quantity int32
 	Server string
 	Auctioned_At time.Time
+	Auction_Line string
 }
 
 func fetchAuctionDataForItem(serverName string, itemName string, skip int, take int) Auctions {
@@ -28,7 +29,7 @@ func fetchAuctionDataForItem(serverName string, itemName string, skip int, take 
 
 	fmt.Println("Checking if server is: ", serverName)
 
-	query := "SELECT i.displayName AS itemName, p.name AS sellerName, a.price, a.quantity, a.server, a.created_at " +
+	query := "SELECT i.displayName AS itemName, p.name AS sellerName, a.price, a.quantity, a.server, a.created_at, a.raw_auction " +
 		"FROM auctions AS a " +
 		"LEFT JOIN players AS p " +
 		"ON a.player_id = p.id " +
@@ -45,7 +46,7 @@ func fetchAuctionDataForItem(serverName string, itemName string, skip int, take 
 	if rows != nil {
 		for rows.Next() {
 			var a Auction
-			err := rows.Scan(&a.Item, &a.Seller, &a.Price, &a.Quantity, &a.Server, &a.Auctioned_At)
+			err := rows.Scan(&a.Item, &a.Seller, &a.Price, &a.Quantity, &a.Server, &a.Auctioned_At, &a.Auction_Line)
 			if err != nil {
 				fmt.Println("Scan error: ", err)
 			}
