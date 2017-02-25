@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"strings"
 	"encoding/json"
+	"github.com/alexmk92/stringutil"
 )
 
 /*
@@ -144,9 +145,11 @@ func (i *Item) setStatistic(code sql.NullString, effect sql.NullString, value sq
 
 		i.Classes = classes
 	} else if code.String == "AFFINITY" {
-		i.Affinities = append(i.Affinities, effect.String)
+		parts := stringutil.RegSplit(effect.String, `  +`)
+		i.Affinities = parts
 	} else if code.String == "SLOT" {
-		i.Slots = append(i.Slots, effect.String)
+		parts := stringutil.RegSplit(effect.String, `  +`)
+		i.Slots = parts
 	} else {
 		var statistic Statistic
 		statistic.Code = strings.ToLower(code.String)
