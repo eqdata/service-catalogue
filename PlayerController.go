@@ -10,4 +10,5 @@ type PlayerController struct { Controller }
 
 func (p *PlayerController) fetch(w http.ResponseWriter, r  *http.Request) {
 	fmt.Println("Fetching player: ", mux.Vars(r)["player_name"])
+	// make sure to fetch players by server too
 }

@@ -14,15 +14,9 @@ type Routes []Route
 // Define any application routes here
 var routes = Routes {
 	Route {
-		"Store Auction",
-		"POST",
-		"/channels/auction",
-		AC.store,
-	},
-	Route {
 		"Fetch Auctions for Item",
 		"GET",
-		"/items/auctions/{item_name}",
+		"/auctions/{item_name}",
 		AC.fetch,
 	},
 	Route {

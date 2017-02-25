@@ -3,25 +3,24 @@ package main
 import (
 	"net/http"
 	"fmt"
-	"time"
 	"github.com/bradfitz/gomemcache/memcache"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"strconv"
+	"strings"
 )
 
 type AuctionController struct { Controller }
 
-// Stores auction data to the Amazon RDS storage once it has been parsed
-func (c *AuctionController) store(w http.ResponseWriter, r  *http.Request) {
-	fmt.Println("Hello :D", r.Body)
-
-
-	go c.parse() // We don't care when this finishes so run it as an async go process
-}
-
 func (c *AuctionController) fetch(w http.ResponseWriter, r  *http.Request) {
 	fmt.Println("Fetching auction data for item: ", TitleCase(mux.Vars(r)["item_name"], true))
+
+	fmt.Println("Sending response to client")
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	w.Header().Set("Access-Control-Allow-Headers", "accept, content-type, x-xsrf-token, x-csrf-token")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 	var auctions Auctions
 	existsInCache := true
@@ -31,17 +30,25 @@ func (c *AuctionController) fetch(w http.ResponseWriter, r  *http.Request) {
 	var skip int
 	var take int
 
-	i, err := strconv.Atoi(r.FormValue("skip"))
+	server := strings.TrimSpace(strings.ToLower(r.FormValue("server")))
+	fmt.Println("Server is: ", server)
+	if server != "red" && server != "blue" {
+		w.WriteHeader(400)
+		w.Write([]byte("The name of the server needs to be specified, please send either red of blue"))
+		return
+	}
+
+	v, err := strconv.Atoi(r.FormValue("skip"))
 	if err != nil {
 		skip = 0
 	} else {
-		skip = i
+		skip = v
 	}
-	i, err = strconv.Atoi(r.FormValue("take"))
+	v, err = strconv.Atoi(r.FormValue("take"))
 	if err != nil {
 		take = 10
 	} else {
-		take = i
+		take = v
 	}
 
 	fmt.Println("Skip: " + fmt.Sprint(skip) + ", Take: " + fmt.Sprint(take))
@@ -49,13 +56,13 @@ func (c *AuctionController) fetch(w http.ResponseWriter, r  *http.Request) {
 	// Attempt to fetch the item from memached
 	mc := memcache.New(MC_HOST + ":" + MC_PORT)
 
-	key := "auction:" + encodedItemName + ":s:" + fmt.Sprint(skip) + ":t:" + fmt.Sprint(take)
+	key := "auction:" + encodedItemName + ":s:" + fmt.Sprint(skip) + ":t:" + fmt.Sprint(take) + ":s:" + server
 	mcItem, err := mc.Get(key)
 	if err != nil {
 		if err.Error() == "memcache: cache miss" {
 			fmt.Println("Couldn't find item in the cache")
 			existsInCache = false
-			auctions = fetchAuctionDataForItem(encodedItemName, skip, take)
+			auctions = fetchAuctionDataForItem(server, encodedItemName, skip, take)
 		} else {
 			fmt.Println("Error was: ", err.Error())
 			return
@@ -71,29 +78,6 @@ func (c *AuctionController) fetch(w http.ResponseWriter, r  *http.Request) {
 		mc.Set(&memcache.Item{Key: fmt.Sprint(key), Value: auctions.serialize(), Expiration: AUCTION_CACHE_TIME_IN_SECS})
 	}
 
-	// If we still have nothing send back a 404
-	fmt.Println("Sending response to client")
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	w.Header().Set("Access-Control-Allow-Headers", "accept, content-type, x-xsrf-token, x-csrf-token")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
-
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(auctions)
-}
-
-// Publishes new auction data to Amazon SQS, this service is responsible
-// for being the publisher in the pub/sub model, the Relay server
-// is the subscriber which streams the data to the consumer via socket.io
-func (c *AuctionController) publish() {
-	fmt.Println("Pushing data to queue system")
-}
-
-//
-func (c *AuctionController) parse() {
-	// This just emulates that this is now asynchronous
-	time.Sleep(2 * time.Second)
-	fmt.Println("Parsing the data!")
-	c.publish()
 }

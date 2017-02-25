@@ -15,34 +15,37 @@ type Auction struct {
 	Item string
 	Price float32
 	Quantity int32
-	Created_at time.Time
-	Updated_at time.Time
+	Server string
+	Auctioned_At time.Time
 }
 
-func fetchAuctionDataForItem(itemName string, skip int, take int) Auctions {
+func fetchAuctionDataForItem(serverName string, itemName string, skip int, take int) Auctions {
 
 	var auctions Auctions
 
 	if take <= 0 { take = 10 }
 	if skip <= 0 { skip = 0 }
 
-	query := "SELECT i.name AS itemName, p.name AS sellerName, a.price, a.quantity, a.created_at, a.updated_at " +
+	fmt.Println("Checking if server is: ", serverName)
+
+	query := "SELECT i.displayName AS itemName, p.name AS sellerName, a.price, a.quantity, a.server, a.created_at " +
 		"FROM auctions AS a " +
 		"LEFT JOIN players AS p " +
 		"ON a.player_id = p.id " +
 		"LEFT JOIN items AS i " +
 		"ON a.item_id = i.id " +
-		"WHERE i.name = ? " +
-		"OR i.displayName = ? " +
+		"WHERE (i.name = ? " +
+		"OR i.displayName = ?) " +
+		"AND a.server = ? " +
 		"LIMIT ? " +
 		"OFFSET ?"
 
 
-	rows, _ := DB.Query(query, itemName, itemName, take, skip)
+	rows, _ := DB.Query(query, itemName, itemName, serverName, take, skip)
 	if rows != nil {
 		for rows.Next() {
 			var a Auction
-			err := rows.Scan(&a.Item, &a.Seller, &a.Price, &a.Quantity, &a.Created_at, &a.Updated_at)
+			err := rows.Scan(&a.Item, &a.Seller, &a.Price, &a.Quantity, &a.Server, &a.Auctioned_At)
 			if err != nil {
 				fmt.Println("Scan error: ", err)
 			}
