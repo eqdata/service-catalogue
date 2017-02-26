@@ -51,6 +51,7 @@ func fetchItemsBySubstring(searchTerm string) Result {
 		"WHERE i.name LIKE ? " +
 		"LIMIT 15 "
 
+	searchTerm = strings.Replace(searchTerm, "_", " ", -1)
 	rows, _ := DB.Query(query, "%" + searchTerm + "%")
 	if rows != nil {
 		for rows.Next() {
@@ -89,6 +90,7 @@ func (i *Item) fetchItemByName(itemName string) {
 
 	LogInDebugMode(query)
 
+	itemName = strings.Replace(itemName, "_", " ", -1)
 	rows, _ := DB.Query(query, itemName, itemName)
 	if rows != nil {
 		for rows.Next() {

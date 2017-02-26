@@ -4,6 +4,7 @@ import (
 	"time"
 	"fmt"
 	"encoding/json"
+	"strings"
 )
 
 type Auctions struct {
@@ -42,7 +43,7 @@ func fetchAuctionDataForItem(serverName string, itemName string, skip int, take 
 		"LIMIT ? " +
 		"OFFSET ?"
 
-
+	itemName = strings.Replace(itemName, "_", " ", -1)
 	rows, _ := DB.Query(query, itemName, itemName, serverName, take, skip)
 	if rows != nil {
 		for rows.Next() {
