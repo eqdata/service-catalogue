@@ -43,8 +43,7 @@ func fetchAuctionDataForItem(serverName string, itemName string, skip int, take 
 		"LIMIT ? " +
 		"OFFSET ?"
 
-	itemName = strings.Replace(itemName, "_", " ", -1)
-	rows, _ := DB.Query(query, itemName, itemName, serverName, take, skip)
+	rows, _ := DB.Query(query, strings.Replace(itemName, "_", " ", -1), itemName, serverName, take, skip)
 	if rows != nil {
 		for rows.Next() {
 			var a Auction

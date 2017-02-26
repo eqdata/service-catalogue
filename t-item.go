@@ -49,10 +49,10 @@ func fetchItemsBySubstring(searchTerm string) Result {
 	query := "SELECT i.displayName " +
 		"FROM items AS i " +
 		"WHERE i.name LIKE ? " +
+		"OR i.displayName LIKE ? " +
 		"LIMIT 15 "
 
-	searchTerm = strings.Replace(searchTerm, "_", " ", -1)
-	rows, _ := DB.Query(query, "%" + searchTerm + "%")
+	rows, _ := DB.Query(query, "%" + searchTerm + "%", "%" + strings.Replace(searchTerm, "_", " ", -1) + "%")
 	if rows != nil {
 		for rows.Next() {
 			var name sql.NullString
@@ -90,8 +90,7 @@ func (i *Item) fetchItemByName(itemName string) {
 
 	LogInDebugMode(query)
 
-	itemName = strings.Replace(itemName, "_", " ", -1)
-	rows, _ := DB.Query(query, itemName, itemName)
+	rows, _ := DB.Query(query, strings.Replace(itemName, "_", " ", -1), itemName)
 	if rows != nil {
 		for rows.Next() {
 			var name, imageSrc, code, effect, effectName, uri, restriction sql.NullString
