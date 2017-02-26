@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/mux"
 	"encoding/json"
 	"github.com/bradfitz/gomemcache/memcache"
+	"strings"
 )
 
 type ItemController struct { Controller }
@@ -15,7 +16,7 @@ func (i *ItemController) fetchItem(w http.ResponseWriter, r  *http.Request) {
 
 	var item Item
 	existsInCache := true
-	encodedItemName := TitleCase(mux.Vars(r)["item_name"], true)
+	encodedItemName := TitleCase(strings.Replace(strings.ToLower(mux.Vars(r)["item_name"]), "spell: ", "", -1), true)
 
 	// Attempt to fetch the item from memached
 	mc := memcache.New(MC_HOST + ":" + MC_PORT)

@@ -139,9 +139,14 @@ func (i *Item) setStatistic(code sql.NullString, effect sql.NullString, value sq
 
 		i.Races = races
 	} else if code.String == "CLASS" {
-		effect.String = strings.Replace(effect.String, ",", " ", -1)
+		var classes []string
 		effect.String = strings.Replace(effect.String, "  ", " ", -1)
-		classes := strings.Split(effect.String, " ")
+		if stringutil.CaseInsenstiveContains(i.Name, "spell:") {
+			classes = strings.Split(effect.String, ",")
+		} else {
+			effect.String = strings.Replace(effect.String, ",", " ", -1)
+			classes = strings.Split(effect.String, " ")
+		}
 
 		i.Classes = classes
 	} else if code.String == "AFFINITY" {

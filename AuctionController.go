@@ -24,7 +24,7 @@ func (c *AuctionController) fetch(w http.ResponseWriter, r  *http.Request) {
 
 	var auctions Auctions
 	existsInCache := true
-	encodedItemName := TitleCase(mux.Vars(r)["item_name"], true)
+	encodedItemName := TitleCase(strings.Replace(strings.ToLower(mux.Vars(r)["item_name"]), "spell: ", "", -1), true)
 
 	// Set skip and take parameters
 	var skip int
