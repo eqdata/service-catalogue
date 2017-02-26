@@ -38,6 +38,7 @@ func fetchAuctionDataForItem(serverName string, itemName string, skip int, take 
 		"WHERE (i.name = ? " +
 		"OR i.displayName = ?) " +
 		"AND a.server = ? " +
+		"ORDER BY a.created_at DESC " +
 		"LIMIT ? " +
 		"OFFSET ?"
 
