@@ -28,6 +28,8 @@ func fetchAuctionDataForItem(serverName string, itemName string, skip int, take 
 	if take <= 0 { take = 10 }
 	if skip <= 0 { skip = 0 }
 
+	itemName = strings.Replace(itemName, "_", " ", -1);
+
 	fmt.Println("Checking if server is: ", serverName)
 
 	query := "SELECT i.displayName AS itemName, p.name AS sellerName, a.price, a.quantity, a.server, a.created_at, a.raw_auction " +
