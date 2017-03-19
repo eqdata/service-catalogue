@@ -28,7 +28,7 @@ import (
 type Item struct {
 	Name string
 	Image string
-	AveragePrice float32
+	PriceData PriceData
 	Statistics []Statistic
 	Effect Effect
 	Affinities []string
@@ -191,3 +191,4 @@ func (i *Item) deserialize(bytes []byte) Item {
 	LogInDebugMode("Unmarshalled to: ", item)
 	return item
 }
+
