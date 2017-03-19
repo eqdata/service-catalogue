@@ -28,7 +28,7 @@ import (
 type Item struct {
 	Name string
 	Image string
-	PriceData PriceData
+	PriceData map[string]PriceData
 	Statistics []Statistic
 	Effect Effect
 	Affinities []string

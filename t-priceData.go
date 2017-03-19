@@ -8,6 +8,14 @@ import (
 	"database/sql"
 )
 
+const (
+	DAILY = 0
+	WEEKLY = 1
+	MONTHLY = 2
+	YEARLY = 3
+	ALL_TIME = 4
+)
+
 type PriceData struct {
 	Average float32
 	Minimum float32
@@ -15,16 +23,40 @@ type PriceData struct {
 	StandardDeviation float32
 }
 
-func (p *PriceData) fetchItemPriceStatistics(itemName string) {
+func (p *PriceData) fetchItemPriceStatistics(itemName string, dRange uint8) {
 	fmt.Println("Fetching item: ", TitleCase(itemName, true))
+
+	dateRange := dRange
+	if(dateRange > 4) { dRange = 4 }
+	if(dateRange < 0) { dRange = 0 }
 
 	existsInCache := true
 
 	// Attempt to fetch the item from memached
 	mc := memcache.New(MC_HOST + ":" + MC_PORT)
 
+	var rangeClause string
+
+	switch(dateRange) {
+	case DAILY:
+		rangeClause = "AND auctions.created_at BETWEEN (CURRENT_DATE() - INTERVAL 1 DAY) AND CURRENT_DATE()"
+		break;
+	case WEEKLY:
+		rangeClause = "AND auctions.created_at BETWEEN (CURRENT_DATE() - INTERVAL 7 DAY) AND CURRENT_DATE()"
+		break;
+	case MONTHLY:
+		rangeClause = "AND auctions.created_at BETWEEN (CURRENT_DATE() - INTERVAL 1 MONTH) AND CURRENT_DATE()"
+		break;
+	case YEARLY:
+		rangeClause = "AND auctions.created_at BETWEEN (CURRENT_DATE() - INTERVAL 1 YEAR) AND CURRENT_DATE()"
+		break;
+	case ALL_TIME:
+		rangeClause = ""
+		break;
+	}
+
 	// Use an _ as we don't need to use the cache item returned
-	key := "pricedata:" + itemName
+	key := "pricedata:" + itemName + fmt.Sprint(dateRange)
 	mcItem, err := mc.Get(key)
 	if err != nil {
 		if err.Error() == "memcache: cache miss" {
@@ -39,8 +71,9 @@ func (p *PriceData) fetchItemPriceStatistics(itemName string) {
 				"FROM auctions " +
 				"JOIN items AS i " +
 				"ON auctions.item_id = i.id " +
-				"WHERE i.displayName = ? " +
-				"OR i.name = ? " +
+				"WHERE (i.displayName = ? " +
+				"OR i.name = ?)" +
+				rangeClause + " " +
 				"LIMIT 1"
 
 			fmt.Println("Query is: " , query)

@@ -52,7 +52,21 @@ func (i *ItemController) fetchItem(w http.ResponseWriter, r  *http.Request) {
 		mc.Set(&memcache.Item{Key: fmt.Sprint(key), Value: item.serialize(), Expiration: AUCTION_CACHE_TIME_IN_SECS})
 	}
 
-	item.PriceData.fetchItemPriceStatistics(encodedItemName)
+	item.PriceData = make(map[string]PriceData)
+
+	var daily, weekly, monthly, yearly, allTime PriceData
+	weekly.fetchItemPriceStatistics(encodedItemName, WEEKLY)
+	daily.fetchItemPriceStatistics(encodedItemName, DAILY)
+	monthly.fetchItemPriceStatistics(encodedItemName, MONTHLY)
+	yearly.fetchItemPriceStatistics(encodedItemName, YEARLY)
+	allTime.fetchItemPriceStatistics(encodedItemName, ALL_TIME)
+
+	item.PriceData["Weekly"] = weekly
+	item.PriceData["Daily"] = daily
+	item.PriceData["Monthly"] = daily
+	item.PriceData["Yearly"] = daily
+	item.PriceData["All"] = daily
+	//item.PriceData.fetchItemPriceStatistics(encodedItemName)
 
 	// If we still have nothing send back a 404
 	fmt.Println("Sending response to client")
