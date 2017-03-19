@@ -76,7 +76,7 @@ func fetchItemsBySubstring(searchTerm string) Result {
 
 // Given a snake_case string find the item in SQL and populate this struct
 func (i *Item) fetchItemByName(itemName string) {
-	query := "SELECT i.displayName, i.imageSrc, s.code, s.effect, s.value, e.name as effectName, e.uri, ie.restriction, " +
+	query := "SELECT i.displayName, i.imageSrc, s.code, s.effect, s.value, e.name as effectName, e.uri, ie.restriction " +
 		"FROM items AS i " +
 		"LEFT JOIN statistics AS s " +
 		"ON s.item_id = i.id " +
