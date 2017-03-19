@@ -55,6 +55,8 @@ func (p *PriceData) fetchItemPriceStatistics(itemName string, dRange uint8) {
 		break;
 	}
 
+	fmt.Println("Clause is: ", rangeClause)
+
 	// Use an _ as we don't need to use the cache item returned
 	key := "pricedata:" + itemName + fmt.Sprint(dateRange)
 	mcItem, err := mc.Get(key)

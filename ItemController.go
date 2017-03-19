@@ -63,9 +63,9 @@ func (i *ItemController) fetchItem(w http.ResponseWriter, r  *http.Request) {
 
 	item.PriceData["Weekly"] = weekly
 	item.PriceData["Daily"] = daily
-	item.PriceData["Monthly"] = daily
-	item.PriceData["Yearly"] = daily
-	item.PriceData["All"] = daily
+	item.PriceData["Monthly"] = monthly
+	item.PriceData["Yearly"] = yearly
+	item.PriceData["All"] = allTime
 	//item.PriceData.fetchItemPriceStatistics(encodedItemName)
 
 	// If we still have nothing send back a 404
