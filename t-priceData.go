@@ -23,7 +23,7 @@ type PriceData struct {
 	StandardDeviation float32
 }
 
-func (p *PriceData) fetchItemPriceStatistics(itemName string, dRange uint8) {
+func (p *PriceData) fetchItemPriceStatistics(serverName, itemName string, dRange uint8) {
 	fmt.Println("Fetching item: ", TitleCase(itemName, true))
 
 	dateRange := dRange
@@ -57,8 +57,9 @@ func (p *PriceData) fetchItemPriceStatistics(itemName string, dRange uint8) {
 
 	fmt.Println("Clause is: ", rangeClause)
 
+	// TODO: Don't set in cache individually, do a group cache afterwards!
 	// Use an _ as we don't need to use the cache item returned
-	key := "pricedata:" + itemName + fmt.Sprint(dateRange)
+	key := "server:" + serverName + ":pricedata:" + itemName + fmt.Sprint(dateRange)
 	mcItem, err := mc.Get(key)
 	if err != nil {
 		if err.Error() == "memcache: cache miss" {
@@ -76,6 +77,7 @@ func (p *PriceData) fetchItemPriceStatistics(itemName string, dRange uint8) {
 				"WHERE (i.displayName = ? " +
 				"OR i.name = ?)" +
 				rangeClause + " " +
+				"AND server ='" + serverName + "' " +
 				"LIMIT 1"
 
 			fmt.Println("Query is: " , query)

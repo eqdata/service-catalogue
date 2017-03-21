@@ -14,15 +14,24 @@ type ItemController struct { Controller }
 func (i *ItemController) fetchItem(w http.ResponseWriter, r  *http.Request) {
 	fmt.Println("Fetching item: ", TitleCase(mux.Vars(r)["item_name"], true))
 
+	server := strings.TrimSpace(strings.ToLower(r.FormValue("server")))
+	fmt.Println("Server is: ", server)
+	if server != "red" && server != "blue" {
+		w.WriteHeader(400)
+		w.Write([]byte("The name of the server needs to be specified, please send either red of blue"))
+		return
+	}
+
 	var item Item
 	existsInCache := true
+
 	encodedItemName := TitleCase(strings.Replace(strings.ToLower(mux.Vars(r)["item_name"]), "spell: ", "", -1), true)
 
 	// Attempt to fetch the item from memached
 	mc := memcache.New(MC_HOST + ":" + MC_PORT)
 
 	// Use an _ as we don't need to use the cache item returned
-	key := "item:" + encodedItemName
+	key := "server:" + server + ":item:" + encodedItemName
 	mcItem, err := mc.Get(key)
 	if err != nil {
 		if err.Error() == "memcache: cache miss" {
@@ -48,18 +57,18 @@ func (i *ItemController) fetchItem(w http.ResponseWriter, r  *http.Request) {
 
 	// Set the item in memcached regardless of result for 15 minutes
 	if !existsInCache {
-		fmt.Println("Setting item: " + "item:" + encodedItemName + " in cache for: " + fmt.Sprint(AUCTION_CACHE_TIME_IN_SECS) + " seconds")
+		fmt.Println("Setting item: " + fmt.Sprint(key) + " in cache for: " + fmt.Sprint(AUCTION_CACHE_TIME_IN_SECS) + " seconds")
 		mc.Set(&memcache.Item{Key: fmt.Sprint(key), Value: item.serialize(), Expiration: AUCTION_CACHE_TIME_IN_SECS})
 	}
 
 	item.PriceData = make(map[string]PriceData)
 
 	var daily, weekly, monthly, yearly, allTime PriceData
-	weekly.fetchItemPriceStatistics(encodedItemName, WEEKLY)
-	daily.fetchItemPriceStatistics(encodedItemName, DAILY)
-	monthly.fetchItemPriceStatistics(encodedItemName, MONTHLY)
-	yearly.fetchItemPriceStatistics(encodedItemName, YEARLY)
-	allTime.fetchItemPriceStatistics(encodedItemName, ALL_TIME)
+	weekly.fetchItemPriceStatistics(server, encodedItemName, WEEKLY)
+	daily.fetchItemPriceStatistics(server, encodedItemName, DAILY)
+	monthly.fetchItemPriceStatistics(server, encodedItemName, MONTHLY)
+	yearly.fetchItemPriceStatistics(server, encodedItemName, YEARLY)
+	allTime.fetchItemPriceStatistics(server, encodedItemName, ALL_TIME)
 
 	item.PriceData["Weekly"] = weekly
 	item.PriceData["Daily"] = daily
